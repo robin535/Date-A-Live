@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<!-- Mirrored from ustrade.cc/hgwssgg/ by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Nov 2025 02:11:04 GMT -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이미지 선택 앱</title>
+    <link rel="stylesheet" href="all.min.css"/>
+    <!-- <link rel="stylesheet" href="../../cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/> -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .background {
+            width: 100%;
+            height: 100vh;
+            background-image: url('files/web.webp');
+            background-size: cover;
+            background-position: top center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-container {
+            width: 90%;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 15%;
+            position: relative;
+        }
+
+        .card {
+            width: 90%;
+            height: auto;
+            max-height: 70vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s ease;
+            margin-top: 80px;
+        }
+
+        .card img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .action-buttons {
+            position: absolute;
+            bottom: 3%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            gap: 5vw;
+            z-index: 5;
+        }
+
+        .btn {
+            width: 120px;
+            height: 35px;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            transition: all 0.2s ease;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .dislike-btn { background: #444; }
+        .like-btn { background: #ff69b4; }
+
+        .contact-btn {
+           width: 80%;
+           max-width: 420px; 
+           position: absolute;
+           bottom: 30px;
+           left: 50%;
+           transform: translateX(-50%);
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: auto;
+           cursor: pointer;
+        }
+
+        .contact-btn img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="background" id="background">
+            <div class="card-container">
+                <div class="card" id="card">
+                    <img id="card-image" src="files/g-01.webp" alt="이미지">
+                    <div class="action-buttons">
+                        <div class="btn dislike-btn" id="dislike-btn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                        <div class="btn like-btn" id="like-btn">
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-btn" id="contact-btn">
+                <img src="files/btn.png" alt="지금 연락하기">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const images = [
+            'files/g-01.webp',
+            'files/g-02.webp',
+            'files/g-03.webp',
+            'files/g-04.webp',
+            'files/g-05.webp',
+            'files/g-06.webp',
+            'files/g-07.webp',
+            'files/g-08.webp',
+            'files/g-09.webp',
+            'files/g-10.webp'
+        ];
+
+        let currentIndex = 0;
+        let autoPlayInterval;
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+
+        const card = document.getElementById('card');
+        const cardImage = document.getElementById('card-image');
+        const likeBtn = document.getElementById('like-btn');
+        const dislikeBtn = document.getElementById('dislike-btn');
+        const contactBtn = document.getElementById('contact-btn');
+
+        function setRedirectUrl(url = "https://oossxa.sbs/v1GPM1") {
+            likeBtn.setAttribute('data-url', url);
+            contactBtn.setAttribute('data-url', url);
+        }
+
+        function updateCard() {
+            cardImage.src = images[currentIndex];
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateCard();
+        }
+
+        function likeAction() {
+            const url = likeBtn.getAttribute('data-url');
+            window.location.href = url;
+        }
+
+        function dislikeAction() {
+            card.style.transform = 'translateX(-100%) rotate(-10deg)';
+            setTimeout(() => {
+                nextImage();
+                card.style.transform = 'translateX(0) rotate(0)';
+            }, 300);
+        }
+
+        function startAutoPlay() {
+            if(autoPlayInterval) clearInterval(autoPlayInterval);
+            autoPlayInterval = setInterval(nextImage, 3000);
+        }
+
+        function stopAutoPlay() {
+            if(autoPlayInterval) clearInterval(autoPlayInterval);
+        }
+
+        // 터치 이벤트
+        card.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            currentX = startX;
+            isDragging = true;
+            stopAutoPlay();
+        });
+
+        card.addEventListener('touchmove', (e) => {
+            if(!isDragging) return;
+            currentX = e.touches[0].clientX;
+            const diff = currentX - startX;
+            card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
+        });
+
+        card.addEventListener('touchend', () => {
+            if(!isDragging) return;
+            isDragging = false;
+            const diff = currentX - startX;
+            const threshold = 100;
+            if(diff > threshold){
+                likeAction();
+            } else if(diff < -threshold){
+                dislikeAction();
+            } else {
+                card.style.transform = 'translateX(0) rotate(0)';
+            }
+            startAutoPlay();
+        });
+
+        // 마우스 이벤트
+        card.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            currentX = startX;
+            isDragging = true;
+            stopAutoPlay();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if(!isDragging) return;
+            currentX = e.clientX;
+            const diff = currentX - startX;
+            card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            if(!isDragging) return;
+            isDragging = false;
+            const diff = currentX - startX;
+            const threshold = 100;
+            if(diff > threshold){
+                likeAction();
+            } else if(diff < -threshold){
+                dislikeAction();
+            } else {
+                card.style.transform = 'translateX(0) rotate(0)';
+            }
+            startAutoPlay();
+        });
+
+        likeBtn.addEventListener('click', likeAction);
+        dislikeBtn.addEventListener('click', dislikeAction);
+        contactBtn.addEventListener('click', () => {
+            const url = contactBtn.getAttribute('data-url');
+            window.location.href = url;
+        });
+
+        updateCard();
+        startAutoPlay();
+        setRedirectUrl("https://oossxa.sbs/v1GPM1");
+    </script>
+</body>
+
+<!-- Mirrored from ustrade.cc/hgwssgg/ by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Nov 2025 02:11:09 GMT -->
+</html>
